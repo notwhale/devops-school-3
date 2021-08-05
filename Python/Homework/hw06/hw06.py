@@ -14,8 +14,6 @@ in either base, may not include leading zeros.)
 
 summ = 0
 for decimal in range(1, 1000001):
-    if str(decimal) == str(decimal)[::-1]:
-        binary = format(decimal, '020b')
-        if binary == binary[::-1]:
-            summ += decimal
+    if str(decimal) == str(decimal)[::-1] and bin(decimal)[2:] == bin(decimal)[-1:1:-1]:
+        summ += decimal
 print(summ)
