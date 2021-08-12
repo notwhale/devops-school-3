@@ -18,5 +18,6 @@ def fib(n):
         a, b = b, a + b
     return fib_list[n - 1]
 
-elem = int(input('Введите аргумент: '))
-print(fib(elem))
+if __name__ == "__main__":
+    elem = int(input('Введите аргумент: '))
+    print(fib(elem))
