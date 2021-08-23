@@ -20,7 +20,7 @@
 
 input_list = list(map(int, input('Введите неотрицательные числа, разделенные пробелами: ').strip().split()))
 input_list.sort()
-for digit in range (input_list[0], len(input_list) + 2):
+for digit in range(input_list[0], len(input_list) + 2):
     if digit not in input_list:
         print(digit)
         break
