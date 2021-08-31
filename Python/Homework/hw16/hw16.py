@@ -14,6 +14,7 @@ Goggle Maps URL: https://www.google.com/maps/search/?api=1&query=60.016666666666
 
 import os
 import csv
+import re
 from geopy.geocoders import Nominatim
 
 def get_gps(latitude, longitude):
@@ -26,8 +27,13 @@ def get_gps(latitude, longitude):
 def gps_to_dec(coordinates):
     result = []
     for coord in coordinates:
-        degrees, minutes = coord.rstrip("'").split(",")
-        coord = float(degrees) + float(minutes) / 60
+        gps_input = re.search(r"(?P<degrees>\-?[0-9]+),(?P<minutes>[0-9]+)\'((?P<seconds>([0-9]+[.])?[0-9]+)\'\')?", coord)
+        degrees = gps_input.group('degrees')
+        minutes = gps_input.group('minutes')
+        seconds = gps_input.group('seconds')
+        if not seconds:
+            seconds = 0
+        coord = float(degrees) + float(minutes) / 60 + float(seconds) / 3600
         result.append(coord)
     return result
 

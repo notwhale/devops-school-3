@@ -17,9 +17,14 @@ def get_files(ext):
 def gps_to_deg(coordinates):
     result = []
     for coord in coordinates:
+        is_negative = coord < 0
+        coord = abs(coord)
         degrees = int(coord)
-        minutes = int(abs(coord - degrees) * 60)
-        result.append(f"{degrees},{minutes}'")
+        minutes = int((coord - degrees) * 60)
+        seconds = (coord - degrees - minutes / 60) * 3600
+        if is_negative:
+            degrees *= -1
+        result.append(f"{degrees},{minutes}'{seconds}''")
     return result
 
 
