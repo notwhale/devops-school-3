@@ -18,15 +18,18 @@ def merge(iter_a, iter_b, limiter=5):
     """
     iter_a = islice(iter_a, 0, limiter)
     iter_b = islice(iter_b, 0, limiter)
+    list_ab = []
     while True:
         try:
             a = next(iter_a)
             b = next(iter_b)
-            yield min(a, b)
-            yield max(a, b)
+            list_ab.append(a)
+            list_ab.append(b)
         except StopIteration:
             break
-
+    list_ab.sort()
+    for x in list_ab:
+        yield x
 
 if __name__ == "__main__":
     print(list(merge((x for x in range(1, 4)), (x for x in range(2, 5)))))
@@ -35,3 +38,4 @@ if __name__ == "__main__":
     print(list(merge((x for x in range(1, 4)), count(1))))
     print(list(merge(count(1), (x for x in range(2, 5)))))
     print(list(merge(count(1), count(1))))
+    print(list(merge((x for x in range(1, 25)), (x for x in range(2, 25, 6)))))

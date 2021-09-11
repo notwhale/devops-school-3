@@ -32,9 +32,12 @@ with open('group', 'r') as file_group:
         g_gname = line.split(":")[0].strip()
         g_gid = line.split(":")[2].strip()
         g_members = line.split(":")[3].strip().split(",")
-        group_list[g_gname] = [user_list[member]['gid'] for member in g_members if member]
-        if user_list.get(g_gname): group_list[g_gname].append(user_list[g_gname]['uid'])
-group_str = ', '.join([f"{group}:{','.join(gids)}" for group, gids in group_list.items()])
+        group_list[g_gname] = {'gid': g_gid, 'members': [user_list[member]['uid'] for member in g_members if member]}
+for user, uprop in user_list.items():
+    for group, gprop in group_list.items():
+        if uprop['gid'] == gprop['gid']:
+            group_list[group]['members'].append(uprop['uid'])
+group_str = ', '.join([f"{group}:{','.join(gids['members'])}" for group, gids in group_list.items()])
 
 with open('output.txt', 'w') as file_output:
     file_output.write(shell_str + '\n')
