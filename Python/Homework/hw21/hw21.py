@@ -12,7 +12,7 @@ list(merge((x for x in range(1,4)),(x for x in range(2,5)))) == [1,2,2,3,3,4]
 from itertools import count, islice
 
 
-def merge(iter_a, iter_b, limiter=5):
+def merge(iter_a, iter_b, limiter=20):
     """
     A generator which joins two sorted iterators.
     """
@@ -22,8 +22,12 @@ def merge(iter_a, iter_b, limiter=5):
     while True:
         try:
             a = next(iter_a)
-            b = next(iter_b)
             list_ab.append(a)
+        except StopIteration:
+            break
+    while True:
+        try:
+            b = next(iter_b)
             list_ab.append(b)
         except StopIteration:
             break
@@ -39,3 +43,8 @@ if __name__ == "__main__":
     print(list(merge(count(1), (x for x in range(2, 5)))))
     print(list(merge(count(1), count(1))))
     print(list(merge((x for x in range(1, 25)), (x for x in range(2, 25, 6)))))
+    #samples from unittest
+    print(list(merge((x for x in range(0)), (y for y in range(0)))))
+    print(list(merge((x for x in range(1,4)),(x for x in range(2,5)))))
+    print(list(merge((x for x in range(11, 25, 3) if not x), (x for x in range(13, 24, 2)))))
+    print(list(merge((a for a in range(20)), (b for b in range(10)))))
