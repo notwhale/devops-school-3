@@ -28,25 +28,21 @@
         Bye!
 """
 
-def digit_operation(n):
-    if n % 2 == 0:
-        return n // 2
-    else:
-        return n * 3 + 1
-
-def digit_recur(n):
-    if n.isdigit():
-        return int(n)
-    else:
-        print('Не удалось преобразовать введенный текст в число.')
-        return digit_recur(input('Введите текст: ').strip().lower())
+def StrToDig(strng, dgt=0):
+    return StrToDig(strng[1:], 10 * dgt + ord(strng[0]) - 48) if strng else dgt
 
 input_line = ''
-while input_line != 'cancel':
-    input_line = input('Введите текст: ').strip().lower()
-    if input_line == 'cancel':
+while input_line.lower() != 'cancel':
+    input_line = input('Введите текст: ').strip()
+    if input_line.lower() == 'cancel':
         print('Bye!')
         break
+    elif not input_line.isdigit():
+        print('Не удалось преобразовать введенный текст в число.')
+        continue
     else:
-        digit = digit_recur(input_line)
-        print(digit_operation(digit))
+        digit = StrToDig(input_line)
+        if digit % 2 == 0:
+            print(digit // 2)
+        else:
+            print(digit * 3 + 1)
