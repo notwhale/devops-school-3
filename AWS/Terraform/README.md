@@ -1,0 +1,1 @@
+# [AWS итоговое задание](https://docs.google.com/document/d/1fzt_MxhbbtBun7yEfpCaUu47LfQf6pXx6IbFk1SLkts/edit)
