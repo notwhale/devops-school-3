@@ -1,3 +1,8 @@
+module "s3" {
+  source = "./modules/s3"
+  namespace = var.namespace
+}
+
 module "networking" {
   source    = "./modules/networking"
   namespace = var.namespace

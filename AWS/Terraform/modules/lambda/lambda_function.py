@@ -6,18 +6,18 @@ ec2_client = boto3.client('ec2')
 asg_client = boto3.client('autoscaling')
 r53_client = boto3.client('route53')
 
-domain = "tf.local."
+domain = "tf.internal."
 ttl = 300
 
 def lambda_handler(event, context):
     """
     - This lambda function gets triggered for every event in auto scaling group (Instance Launch/Instance Terminate)
-    - It first checks if the 'alteon.internal.' Hosted Zone exists for same VPC from which the autosclaing group event was triggered
+    - It first checks if the 'tf.internal.' Hosted Zone exists for same VPC from which the autosclaing group event was triggered
     - If Hosted Zone exists it obtains its ID
     - Else Hosted Zone doesn't exist it creates it and obtains its ID
     - Next it obtains a list of private IPs of all active instances in the autoscaling group which triggered this event
-    - If the list contains at least one instance it creates or updates a record set named '<autoscaling_group_name>.alteon.internal.' with the private IPs of the instances as A records
-    - Else the list is empty (which means the auto scaling group was deleted or doesnt contain any active instance) it deletes the record set named '<autoscaling_group_name>.alteon.internal.'
+    - If the list contains at least one instance it creates or updates a record set named '<autoscaling_group_name>.tf.internal.' with the private IPs of the instances as A records
+    - Else the list is empty (which means the auto scaling group was deleted or doesnt contain any active instance) it deletes the record set named '<autoscaling_group_name>.tf.internal.'
     """
     asg_name = event['detail']['AutoScalingGroupName']
     record_set_name = asg_name + "." + domain
