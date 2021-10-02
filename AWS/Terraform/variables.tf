@@ -29,6 +29,6 @@ variable "region" {
 }
 variable "profile" {
     description = "AWS CLI profile"
-    default     = "default"
+    default     = "prod"
     type        = string
 }

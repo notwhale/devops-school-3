@@ -30,8 +30,8 @@ variable "target_group_arns" {
   type = any
 }
 
-variable "ec2_profile" {
-  type = any
+variable "ec2_profile_arn" {
+  type = string
 }
 
 variable "ami_id" {

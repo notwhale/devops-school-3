@@ -21,9 +21,9 @@ module "asg" {
   use_lt                    = true
   create_lt                 = true
   image_id                  = var.ami_id
+  iam_instance_profile_arn  = var.ec2_profile_arn
   instance_type             = "t2.micro"
   key_name                  = var.key_name
-  iam_instance_profile_arn  = var.ec2_profile
   user_data_base64          = base64encode("${file("${path.module}/../scripts/nginx.sh")}")
   tag_specifications        = [
     {

@@ -1,3 +1,9 @@
+module "iam" {
+  source = "./modules/iam"
+  namespace = var.namespace
+  bastion_id = module.ec2.bastion_id
+}
+
 module "s3" {
   source = "./modules/s3"
   namespace = var.namespace
@@ -30,6 +36,8 @@ module "ec2" {
   vpc1_sg_private_id = module.networking.vpc1_sg_private_id
   vpc2_sg_public_id  = module.networking.vpc2_sg_public_id
   vpc2_sg_private_id = module.networking.vpc2_sg_private_id
+  ec2_profile_name   = module.iam.ec2_profile_name
+  ec2_role_id        = module.iam.ec2_role_id
   key_name           = module.ssh-key.key_name
   region             = var.region
 }
@@ -55,5 +63,5 @@ module "asg" {
   subnets           = module.networking.vpc2.public_subnets
   security_groups   = module.networking.vpc2_sg_private_id
   target_group_arns = module.alb.target_group_arns
-  ec2_profile       = module.ec2.ec2_profile
+  ec2_profile_arn   = module.iam.ec2_profile_arn
 }

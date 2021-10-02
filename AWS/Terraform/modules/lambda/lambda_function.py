@@ -24,29 +24,29 @@ def lambda_handler(event, context):
     event_region = event['region']
     for subnet in ec2_client.describe_subnets(SubnetIds=[event['detail']['Details']['Subnet ID']])['Subnets']:
         event_vpc_id = subnet['VpcId']
-    print("{} in autoscaling group {} under VPC ID {}".format(event['detail']['Description'], asg_name, event_vpc_id))
+    print(f"{event['detail']['Description']} in autoscaling group {asg_name} under VPC ID {event_vpc_id}")
     # If Hosted Zone exists in Route53 obtain its ID.
     hosted_zone_id = get_hosted_zone_id(domain, event_vpc_id)
     if hosted_zone_id:
-        print("HostedZone {} under VPC ID {} in region {} exists in with ID {}".format(domain, event_vpc_id, event_region, hosted_zone_id))
+        print(f"HostedZone {domain} under VPC ID {event_vpc_id} in region {event_region} exists in with ID {hosted_zone_id}")
     # Else Hosted Zone doesn't exist in Route53 create it and obtain its ID.
     else:
-        print("Hosted Zone {} Doesn't exists under VPC ID {} in region {}. going to create it".format(domain, event_vpc_id, event_region))
+        print(f"Hosted Zone {domain} Doesn't exists under VPC ID {event_vpc_id} in region {event_region}. going to create it")
         hosted_zone_id = create_hosted_zone(domain, event_region, event_vpc_id)
         if hosted_zone_id:
-            print("HostedZone {} under VPC ID {} in region {} was created successfully with ID {}".format(domain, event_vpc_id, event_region, hosted_zone_id))
+            print(f"HostedZone {domain} under VPC ID {event_vpc_id} in region {event_region} was created successfully with ID {hosted_zone_id}")
         else:
-            print("HostedZone {} under VPC ID {} in region {} was already created by other instance of the lambda function - aborting".format(domain, event_vpc_id, event_region))
+            print(f"HostedZone {domain} under VPC ID {event_vpc_id} in region {event_region} was already created by other instance of the lambda function - aborting")
             sys.exit()            
     # Obtain Private IPs of all active instances in the auto scaling group which triggered this event.
     servers = get_asg_private_ips(asg_name)
     # If there are Private IPs it means the autoscaling group exists and contains at least one active instances. Create/Update record set in Route53 Hosted Zone.
     if servers:
         update_hosted_zone_records(hosted_zone_id, record_set_name, ttl, servers)
-        print("Record set {} was created/updated successfully with the following A records {}".format(record_set_name, servers))
+        print(f"Record set {record_set_name} was created/updated successfully with the following A records {servers}")
     # If there are no Private IPs it means the autoscaling group was deleted or doesn't contain any active instances. Remove record set from Hosted Zone in Route53.
     else:
-        print("Auto Scaling group {} does not exist or empty - going to remove relevent A records".format(asg_name))
+        print(f"Auto Scaling group {asg_name} does not exist or empty - going to remove relevent A records")
         delete_hosted_zone_records(hosted_zone_id, record_set_name)
 
 
@@ -70,7 +70,7 @@ def create_hosted_zone(domain, event_region, event_vpc_id):
             },
             CallerReference = str(time.time()),
             HostedZoneConfig = {
-                'Comment': "Created by Radware lambda fucntion for VPC {} in region {}".format(event_vpc_id, event_region),
+                'Comment': f"Created by Radware lambda fucntion for VPC {event_vpc_id} in region {event_region}",
                 'PrivateZone': True
             }
         )
@@ -125,9 +125,9 @@ def delete_hosted_zone_records(hosted_zone_id, record_set_name):
                         'ResourceRecordSet': record_set
                     }]
                 })
-                print("Record set {} removed successfully".format(record_set_name))
+                print(f"Record set {record_set_name} removed successfully")
             except:
-                print("Record set {} was already removed by other instance of the lambda function".format(record_set_name))
+                print(f"Record set {record_set_name} was already removed by other instance of the lambda function")
             break
     else:
-        print("Record set {} was already removed by other instance of the lambda function".format(record_set_name))
+        print(f"Record set {record_set_name} was already removed by other instance of the lambda function")

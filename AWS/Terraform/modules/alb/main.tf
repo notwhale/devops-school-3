@@ -17,11 +17,9 @@ module "alb" {
       target_type      = "instance"
       targets = [
         {
-        #   target_id = data.aws_instance.host1.id
           target_id = var.host1_id
         },
         {
-        #   target_id = data.aws_instance.host2.id
           target_id = var.host2_id
         }
       ]

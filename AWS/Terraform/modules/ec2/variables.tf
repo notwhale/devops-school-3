@@ -2,6 +2,10 @@ variable "namespace" {
   type = string
 }
 
+variable "region" {
+  type = string
+}
+
 variable "owner" {
   type = string
 }
@@ -46,6 +50,10 @@ variable "vpc2_sg_private_id" {
   type = any
 }
 
-variable "region" {
+variable "ec2_profile_name" {
+  type = string
+}
+
+variable "ec2_role_id" {
   type = string
 }
