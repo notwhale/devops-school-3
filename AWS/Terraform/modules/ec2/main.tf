@@ -39,13 +39,13 @@ resource "aws_instance" "ec2_bastion" {
     ]
   }
   tags = {
-    "Name"        = "${var.namespace}-EC2-BASTION"
+    "Name"        = "${var.namespace}-BASTION"
     "owner"       = "${var.owner}"
     "project"     = "${var.project}"
     "environment" = "${var.environment}"
   }
   volume_tags = {
-    "Name"        = "${var.namespace}-VOL-BASTION"
+    "Name"        = "${var.namespace}-BASTION"
     "owner"       = "${var.owner}"
     "project"     = "${var.project}"
     "environment" = "${var.environment}"
@@ -61,13 +61,13 @@ resource "aws_instance" "ec2_host1" {
   iam_instance_profile        = var.ec2_profile_name
   user_data                   = "${file("${path.module}/../scripts/nginx.sh")}"
   tags = {
-    "Name"        = "${var.namespace}-EC2-HOST1"
+    "Name"        = "${var.namespace}-HOST1"
     "owner"       = "${var.owner}"
     "project"     = "${var.project}"
     "environment" = "${var.environment}"
   }
   volume_tags = {
-    "Name"        = "${var.namespace}-VOL-HOST1"
+    "Name"        = "${var.namespace}-HOST1"
     "owner"       = "${var.owner}"
     "project"     = "${var.project}"
     "environment" = "${var.environment}"
@@ -83,13 +83,13 @@ resource "aws_instance" "ec2_host2" {
   iam_instance_profile        = var.ec2_profile_name
   user_data                   = "${file("${path.module}/../scripts/nginx.sh")}"
   tags = {
-    "Name"        = "${var.namespace}-EC2-HOST2"
+    "Name"        = "${var.namespace}-HOST2"
     "owner"       = "${var.owner}"
     "project"     = "${var.project}"
     "environment" = "${var.environment}"
   }
   volume_tags = {
-    "Name"        = "${var.namespace}-VOL-HOST2"
+    "Name"        = "${var.namespace}-HOST2"
     "owner"       = "${var.owner}"
     "project"     = "${var.project}"
     "environment" = "${var.environment}"

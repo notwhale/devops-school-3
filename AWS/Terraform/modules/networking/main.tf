@@ -1,4 +1,3 @@
-//VPC
 data "aws_availability_zones" "available" {}
 
 module "vpc1" {
@@ -23,7 +22,6 @@ module "vpc2" {
   enable_dns_support   = true
 }
 
-//SECURITY GROUP
 module "vpc1_sg_public" {
   source = "terraform-aws-modules/security-group/aws"
 
@@ -202,8 +200,6 @@ module "vpc2_sg_private" {
   egress_cidr_blocks = ["0.0.0.0/0"]
 }
 
-// VPC PEERING
-
 resource "aws_vpc_peering_connection" "peer" {
   peer_vpc_id = module.vpc2.vpc_id
   vpc_id      = module.vpc1.vpc_id
@@ -249,8 +245,6 @@ resource "aws_route" "vpc-peering-route-VPC2-private" {
   destination_cidr_block    = module.vpc1.vpc_cidr_block
   vpc_peering_connection_id = aws_vpc_peering_connection.peer.id
 }
-
-// Endpoint
 
 module "vpc1-endpoints" {
   source = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"

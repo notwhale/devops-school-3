@@ -10,43 +10,34 @@ domain = "tf.internal."
 ttl = 300
 
 def lambda_handler(event, context):
-    """
-    - This lambda function gets triggered for every event in auto scaling group (Instance Launch/Instance Terminate)
-    - It first checks if the 'tf.internal.' Hosted Zone exists for same VPC from which the autosclaing group event was triggered
-    - If Hosted Zone exists it obtains its ID
-    - Else Hosted Zone doesn't exist it creates it and obtains its ID
-    - Next it obtains a list of private IPs of all active instances in the autoscaling group which triggered this event
-    - If the list contains at least one instance it creates or updates a record set named '<autoscaling_group_name>.tf.internal.' with the private IPs of the instances as A records
-    - Else the list is empty (which means the auto scaling group was deleted or doesnt contain any active instance) it deletes the record set named '<autoscaling_group_name>.tf.internal.'
-    """
-    asg_name = event['detail']['AutoScalingGroupName']
+    asg_name = event['detail']['autoscalinggroupname']
     record_set_name = asg_name + "." + domain
     event_region = event['region']
-    for subnet in ec2_client.describe_subnets(SubnetIds=[event['detail']['Details']['Subnet ID']])['Subnets']:
-        event_vpc_id = subnet['VpcId']
-    print(f"{event['detail']['Description']} in autoscaling group {asg_name} under VPC ID {event_vpc_id}")
-    # If Hosted Zone exists in Route53 obtain its ID.
+    for subnet in ec2_client.describe_subnets(subnetids=[event['detail']['details']['subnet id']])['subnets']:
+        event_vpc_id = subnet['vpcid']
+    print(f"{event['detail']['description']} in autoscaling group {asg_name} under vpc id {event_vpc_id}")
+    # if hosted zone exists in route53 obtain its id.
     hosted_zone_id = get_hosted_zone_id(domain, event_vpc_id)
     if hosted_zone_id:
-        print(f"HostedZone {domain} under VPC ID {event_vpc_id} in region {event_region} exists in with ID {hosted_zone_id}")
-    # Else Hosted Zone doesn't exist in Route53 create it and obtain its ID.
+        print(f"hostedzone {domain} under vpc id {event_vpc_id} in region {event_region} exists in with id {hosted_zone_id}")
+    # else hosted zone doesn't exist in route53 create it and obtain its id.
     else:
-        print(f"Hosted Zone {domain} Doesn't exists under VPC ID {event_vpc_id} in region {event_region}. going to create it")
+        print(f"hosted zone {domain} doesn't exists under vpc id {event_vpc_id} in region {event_region}. going to create it")
         hosted_zone_id = create_hosted_zone(domain, event_region, event_vpc_id)
         if hosted_zone_id:
-            print(f"HostedZone {domain} under VPC ID {event_vpc_id} in region {event_region} was created successfully with ID {hosted_zone_id}")
+            print(f"hostedzone {domain} under vpc id {event_vpc_id} in region {event_region} was created successfully with id {hosted_zone_id}")
         else:
-            print(f"HostedZone {domain} under VPC ID {event_vpc_id} in region {event_region} was already created by other instance of the lambda function - aborting")
-            sys.exit()            
-    # Obtain Private IPs of all active instances in the auto scaling group which triggered this event.
+            print(f"hostedzone {domain} under vpc id {event_vpc_id} in region {event_region} was already created by other instance of the lambda function - aborting")
+            sys.exit()
+    # obtain private ips of all active instances in the auto scaling group which triggered this event.
     servers = get_asg_private_ips(asg_name)
-    # If there are Private IPs it means the autoscaling group exists and contains at least one active instances. Create/Update record set in Route53 Hosted Zone.
+    # if there are private ips it means the autoscaling group exists and contains at least one active instances. create/update record set in route53 hosted zone.
     if servers:
         update_hosted_zone_records(hosted_zone_id, record_set_name, ttl, servers)
-        print(f"Record set {record_set_name} was created/updated successfully with the following A records {servers}")
-    # If there are no Private IPs it means the autoscaling group was deleted or doesn't contain any active instances. Remove record set from Hosted Zone in Route53.
+        print(f"record set {record_set_name} was created/updated successfully with the following a records {servers}")
+    # if there are no private ips it means the autoscaling group was deleted or doesn't contain any active instances. remove record set from hosted zone in route53.
     else:
-        print(f"Auto Scaling group {asg_name} does not exist or empty - going to remove relevent A records")
+        print(f"auto scaling group {asg_name} does not exist or empty - going to remove relevent a records")
         delete_hosted_zone_records(hosted_zone_id, record_set_name)
 
 
@@ -61,7 +52,7 @@ def get_hosted_zone_id(domain, event_vpc_id):
 
 
 def create_hosted_zone(domain, event_region, event_vpc_id):
-    try:    
+    try:
         response = r53_client.create_hosted_zone(
             Name = domain,
             VPC = {
